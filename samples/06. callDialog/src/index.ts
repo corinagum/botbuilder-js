@@ -42,19 +42,27 @@ bot.rootDialog = dialogs;
 
 // Greet the user
 dialogs.addRule(new WelcomeRule([
-    new SendActivity(`I'm a joke bot. To get started say "tell me a joke".`)
+    new CallDialog('AskNameDialog')
 ]));
 
 // Add a top level fallback rule to handle received messages
 dialogs.addRule(new DefaultRule([
-    new CallDialog('AskNameDialog')
+    new SendActivity(`{user.name}, I can tell jokes.`)
 ]));
 
+let regexRec = new RegExpRecognizer();
 // Tell the user a joke
-dialogs.recognizer = new RegExpRecognizer().addIntent('JokeIntent', /tell .*joke/i);
+regexRec.addIntent('JokeIntent', /tell .*joke/i);
 dialogs.addRule(new IntentRule('#JokeIntent', [
     new CallDialog('TellJokeDialog')
 ]));
+
+regexRec.addIntent('UnfunnyIntent', /not funny/i);
+dialogs.addRule(new IntentRule('#UnfunnyIntent', [
+    new CallDialog('NotFunnyDialog')
+]));
+
+dialogs.recognizer = regexRec;
 
 //=================================================================================================
 // Support Dialogs
@@ -65,10 +73,13 @@ askNameDialog.addRule(new BeginDialogRule([
     new IfProperty('!user.name', [
         new TextInput('user.name', `Hi! what's your name?`)
     ]),
-    new SendActivity(`Hi {user.name}. It's nice to meet you.`),
+    new IfProperty (`!user.lastName`, [
+        new TextInput(`user.lastName`, `{user.name}, what is your last name?`)
+    ]),
+    new SendActivity(`Hi {user.name} {user.lastName}. It's nice to meet you.`),
     new EndDialog()
 ]));
-dialogs.addDialog(askNameDialog)
+dialogs.addDialog(askNameDialog);
 
 const tellJokeDialog = new AdaptiveDialog('TellJokeDialog');
 tellJokeDialog.addRule(new BeginDialogRule([
@@ -78,3 +89,11 @@ tellJokeDialog.addRule(new BeginDialogRule([
     new EndDialog()
 ]));
 dialogs.addDialog(tellJokeDialog);
+
+const notFunnyDialog = new AdaptiveDialog('NotFunnyDialog');
+notFunnyDialog.addRule(new BeginDialogRule([
+    new SendActivity(`Sorry you don't appreciate my refined humor.`),
+    new EndDialog()
+]));
+
+dialogs.addDialog(notFunnyDialog);
