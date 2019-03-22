@@ -41,18 +41,26 @@ dialogs.addRule(new WelcomeRule([
     new SendActivity(`I'm a joke bot. To get started say "tell me a joke".`)
 ]));
 
-// Add a top level fallback rule to handle received messages
-dialogs.addRule(new DefaultRule([
-    new IfProperty('!user.name', [
-        new TextInput('user.name', `Hi! what's your name?`)
-    ]),
-    new SendActivity(`Hi {user.name}. It's nice to meet you.`)
-]));
+// // Add a top level fallback rule to handle received messages
+// dialogs.addRule(new DefaultRule([
+//     new IfProperty('!user.name', [
+//         new TextInput('user.name', `Hi! what's your name?`)
+//     ]),
+//     new SendActivity(`Hi {user.name}. It's nice to meet you.`)
+// ]));
 
-// Tell the user a joke
-dialogs.recognizer = new RegExpRecognizer().addIntent('JokeIntent', /tell .*joke/i);
+// // Tell the user a joke
+let recognizer = new RegExpRecognizer();
+recognizer.addIntent('JokeIntent', /tell .*joke/i);
 dialogs.addRule(new IntentRule('#JokeIntent', [
     new SendActivity(`Why did the 🐔 cross the 🛣️?`),
     new WaitForInput(),
     new SendActivity(`To get to the other side...`)
 ]));
+
+recognizer.addIntent('UnfunnyIntent', /not funny/i);
+dialogs.addRule(new IntentRule('#UnfunnyIntent', [
+    new SendActivity(`Sorry you're not smart enough to understand my refined humor`)
+]));
+
+dialogs.recognizer = recognizer;
