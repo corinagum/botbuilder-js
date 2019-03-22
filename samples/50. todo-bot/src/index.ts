@@ -127,7 +127,7 @@ deleteToDoDialog.addRule(new BeginDialogRule([
     new IfProperty('user.todos', [
         new SaveEntity('$title', '@title'),
         new ChoiceInput('$title', `Which todo would you like to remove?`, 'user.todos'),
-        new ChangeList(ChangeListType.remove, '$user.todos', '$title'),
+        new ChangeList(ChangeListType.remove, 'user.todos', '$title'),
         new SendActivity(`Deleted the todo named "{$title}". You can delete all your todos by saying "delete all todos".`),
     ]).else([
         new SendActivity(`No todos to delete.`)
