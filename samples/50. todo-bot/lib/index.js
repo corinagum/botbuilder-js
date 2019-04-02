@@ -59,7 +59,7 @@ dialogs.addRule(new botbuilder_rules_1.IntentRule('#ClearToDos', [
 ]));
 dialogs.addRule(new botbuilder_rules_1.IntentRule('#ShowToDos', [
     new botbuilder_rules_1.CallDialog('ShowToDosDialog')
-]));
+], botbuilder_rules_1.PlanChangeType.doSteps));
 // Define rules to handle cancel events
 dialogs.addRule(new botbuilder_rules_1.EventRule('cancelAdd', [
     new botbuilder_rules_1.SendActivity(`Ok... Cancelled adding new alarm.`)
@@ -104,7 +104,7 @@ deleteToDoDialog.addRule(new botbuilder_rules_1.BeginDialogRule([
     new botbuilder_rules_1.IfProperty('user.todos', [
         new botbuilder_rules_1.SaveEntity('$title', '@title'),
         new botbuilder_rules_1.ChoiceInput('$title', `Which todo would you like to remove?`, 'user.todos'),
-        new botbuilder_rules_1.ChangeList(botbuilder_rules_1.ChangeListType.remove, '$user.todos', '$title'),
+        new botbuilder_rules_1.ChangeList(botbuilder_rules_1.ChangeListType.remove, 'user.todos', '$title'),
         new botbuilder_rules_1.SendActivity(`Deleted the todo named "{$title}". You can delete all your todos by saying "delete all todos".`),
     ]).else([
         new botbuilder_rules_1.SendActivity(`No todos to delete.`)
